@@ -3,19 +3,14 @@ services:
 - docker
 env:
   global:
-  - GCP_PROJECT_ID=pgr301-docker-demo
-  - IMAGE=gcr.io/pgr301-docker-demo/helloworld
-  - CLOUD_RUN_SERVICE=pgr301-docker-demo
-  - CLOUD_RUN_REGION=us-central1
-  - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  - GCP_PROJECT_ID=terraform-292215
+  - IMAGE=gcr.io/terraform-292215/helloworld
 before_install:
 - openssl aes-256-cbc -K $encrypted_ba8f794f8d33_key -iv $encrypted_ba8f794f8d33_iv
   -in terraform.json.enc -out terraform.json -d
-- openssl aes-256-cbc -K $encrypted_ba8f794f8d33_key -iv $encrypted_ba8f794f8d33_iv
-  -in google-key.json.enc -out google-key.json -d
 - curl https://sdk.cloud.google.com | bash > /dev/null
 - source "$HOME/google-cloud-sdk/path.bash.inc"
-- gcloud auth activate-service-account --key-file=2google-key.json
+- gcloud auth activate-service-account --key-file=terraform.json
 - gcloud auth configure-docker
 - gcloud config set project "${GCP_PROJECT_ID}"
 - gcloud components install beta
@@ -25,9 +20,4 @@ script:
   set -ex;
   docker build -t "${IMAGE}:${TRAVIS_COMMIT}" . && \
   docker push "${IMAGE}:${TRAVIS_COMMIT}" && \
-  gcloud beta run deploy "${CLOUD_RUN_SERVICE}" \
-    --image="${IMAGE}:${TRAVIS_COMMIT}" \
-    --platform=managed \
-    --region="${CLOUD_RUN_REGION}" \
-    --allow-unauthenticated;
   set +x
