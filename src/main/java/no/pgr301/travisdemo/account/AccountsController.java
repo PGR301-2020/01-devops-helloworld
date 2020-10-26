@@ -27,6 +27,7 @@ public class AccountsController {
 
     @RequestMapping(path = "/pong")
     public String pong() {
+        LOG.info(String.format("Pong"));
         return "ping";
     }
 
